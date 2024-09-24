@@ -1,3 +1,10 @@
 from django.db import models
+from djongo import models
 
-# Create your models here.
+class PDFData(models.Model):
+    email = models.EmailField(unique=True)
+    nouns = models.JSONField()
+    verbs = models.JSONField()
+
+    def __str__(self):
+        return self.email

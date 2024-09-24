@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload PDF</title>
+</head>
+<body>
+    <h1>Upload PDF and Extract Data</h1>
+    <form action="/api/upload/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Email: <input type="email" name="email"></label><br><br>
+        <label>PDF File: <input type="file" name="pdf"></label><br><br>
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
