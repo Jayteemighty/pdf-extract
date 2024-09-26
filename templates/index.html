@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload PDF</title>
 </head>
 <body>
     <h1>Upload PDF and Extract Data</h1>
-    <form action="/api/upload/" method="POST" enctype="multipart/form-data">
+    <form action="http://localhost:8000/api/upload/" method="POST" enctype="multipart/form-data">
+        <!-- Include the CSRF token for security -->
         {% csrf_token %}
-        <label>Email: <input type="email" name="email"></label><br><br>
-        <label>PDF File: <input type="file" name="pdf"></label><br><br>
+        <label for="email">Email: </label>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="pdf">PDF File: </label>
+        <input type="file" id="pdf" name="pdf" accept=".pdf" required><br><br>
+        
         <input type="submit" value="Upload">
     </form>
 </body>
