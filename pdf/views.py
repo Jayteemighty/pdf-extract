@@ -1,63 +1,48 @@
-from django.shortcuts import render
+import PyPDF2
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from .models import PDFData
 from .serializers import PDFDataSerializer
-import fitz  # PyMuPDF
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.tag import pos_tag
-from django.core.files.storage import FileSystemStorage
-import os
 
-# Append the correct path to the nltk_data in the virtual environment
-nltk.data.path.append('./venv/nltk_data/')
-
-# Ensure NLTK resources are already downloaded
-nltk.download('punkt', quiet=True, download_dir='./venv/nltk_data/')
-nltk.download('averaged_perceptron_tagger', quiet=True, download_dir='./venv/nltk_data/')
-
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('stopwords')
 
 class UploadPDF(APIView):
-    def post(self, request):
-        pdf_file = request.FILES.get('pdf')
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        file = request.FILES['file']
         email = request.data.get('email')
 
-        if not pdf_file or not email:
-            return Response({"error": "Missing file or email"}, status=status.HTTP_400_BAD_REQUEST)
+        # Extract text from PDF
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = ''
+        for page_num in range(len(pdf_reader.pages)):
+            text += pdf_reader.pages[page_num].extract_text()
 
-        try:
-            # Save the file to the server temporarily
-            fs = FileSystemStorage()
-            filename = fs.save(pdf_file.name, pdf_file)
-            file_path = fs.path(filename)
+        # Tokenize and filter words
+        words = word_tokenize(text)
+        stop_words = set(stopwords.words('english'))
+        nouns = [word for word in words if word.isalpha() and word not in stop_words and nltk.pos_tag([word])[0][1] == 'NN']
+        verbs = [word for word in words if word.isalpha() and word not in stop_words and nltk.pos_tag([word])[0][1] == 'VB']
 
-            # Extract text from the saved PDF file
-            doc = fitz.open(file_path)
-            text = ""
-            for page in doc:
-                text += page.get_text()
-
-            # Tokenize and POS tag the text
-            words = word_tokenize(text)
-            tagged = pos_tag(words)
-
-            # Extract nouns and verbs
-            nouns = [word for word, pos in tagged if pos.startswith('NN')]
-            verbs = [word for word, pos in tagged if pos.startswith('VB')]
-
-            # Save data to the database
-            pdf_data = PDFData.objects.create(email=email, nouns=nouns, verbs=verbs)
-
-            # Serialize and return data
-            serializer = PDFDataSerializer(pdf_data)
-
-            # Optionally, delete the file after processing
-            if os.path.exists(file_path):
-                os.remove(file_path)
-
+        # Save to database
+        data = {
+            'email': email,
+            'nouns': nouns,
+            'verbs': verbs
+        }
+        serializer = PDFDataSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
