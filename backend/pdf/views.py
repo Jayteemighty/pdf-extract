@@ -8,19 +8,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from .models import PDFData
 from .serializers import PDFDataSerializer
-import os
 
-# Set the NLTK data path
-NLTK_DATA_DIR = os.path.join(os.path.dirname(__file__), 'nltk_data')
-nltk.data.path.append(NLTK_DATA_DIR)
-
-# Ensure necessary NLTK packages are downloaded if not present
-if not os.path.exists(os.path.join(NLTK_DATA_DIR, 'tokenizers/punkt')):
-    nltk.download('punkt', download_dir=NLTK_DATA_DIR)
-if not os.path.exists(os.path.join(NLTK_DATA_DIR, 'taggers/averaged_perceptron_tagger')):
-    nltk.download('averaged_perceptron_tagger', download_dir=NLTK_DATA_DIR)
-if not os.path.exists(os.path.join(NLTK_DATA_DIR, 'corpora/stopwords')):
-    nltk.download('stopwords', download_dir=NLTK_DATA_DIR)
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('stopwords')
 
 class UploadPDF(APIView):
     parser_classes = (MultiPartParser, FormParser)
