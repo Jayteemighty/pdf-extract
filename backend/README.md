@@ -1,4 +1,4 @@
-##  **pdf-extract**
+##  **Pdf Extract**
 
 Simple app to extract nouns and verbs from pdf files
 
