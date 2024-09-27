@@ -1,6 +1,5 @@
-import os
-import nltk
 import PyPDF2
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from rest_framework.views import APIView
@@ -10,29 +9,11 @@ from rest_framework import status
 from .models import PDFData
 from .serializers import PDFDataSerializer
 
-# Define the NLTK data path
+import os
+
+# Set the NLTK data path to point to the bundled nltk_data directory
 nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
 nltk.data.path.append(nltk_data_path)
-
-# Function to download necessary NLTK data if not available
-def download_nltk_data():
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt', download_dir=nltk_data_path)
-
-    try:
-        nltk.data.find('taggers/averaged_perceptron_tagger')
-    except LookupError:
-        nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_path)
-
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords', download_dir=nltk_data_path)
-
-# Call the function before text processing
-download_nltk_data()
 
 class UploadPDF(APIView):
     parser_classes = (MultiPartParser, FormParser)
