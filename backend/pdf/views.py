@@ -1,5 +1,6 @@
 import os
 import nltk
+import PyPDF2
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from rest_framework.views import APIView
