@@ -2,6 +2,5 @@ venv
 .env
 __pycache__/
 .github
-nltk_data
 media
 task.txt
