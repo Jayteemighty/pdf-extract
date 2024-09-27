@@ -1,5 +1,4 @@
 import PyPDF2
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from rest_framework.views import APIView
@@ -12,6 +11,7 @@ from .serializers import PDFDataSerializer
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('stopwords')
+import nltk
 
 class UploadPDF(APIView):
     parser_classes = (MultiPartParser, FormParser)
