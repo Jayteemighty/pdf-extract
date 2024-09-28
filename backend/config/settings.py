@@ -14,12 +14,12 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-import nltk
-nltk.download('punkt')
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger_eng')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('stopwords')
+#import nltk
+#nltk.download('punkt')
+#nltk.download('punkt_tab')
+#nltk.download('averaged_perceptron_tagger_eng')
+#nltk.download('averaged_perceptron_tagger')
+#nltk.download('stopwords')
 
 # Load environment variables from .env file
 env_path = Path('.') / '.env'

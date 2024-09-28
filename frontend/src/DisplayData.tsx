@@ -7,6 +7,8 @@ interface DisplayDataProps {
 const DisplayData: React.FC<DisplayDataProps> = ({ data }) => {
   if (!data) return null;
 
+  console.log('Displaying data:', data); // Log data when it's being rendered
+
   return (
     <div className="mt-4">
       <h2>Extracted Data:</h2>
