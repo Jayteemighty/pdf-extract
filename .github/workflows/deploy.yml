@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,12 +18,42 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install dependencies
+    - name: Install backend dependencies
+      working-directory: ./backend  # Set to backend folder
       run: |
         pip install -r requirements.txt
 
-    - name: Deploy to Render
+    - name: Deploy Backend to Render
       env:
         RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       run: |
-        render-cli deploy service <your-service-id> --branch main
+        render-cli deploy srv-crqqp0m8ii6s73bhvvu0 --branch main  # Use your actual backend service ID
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install frontend dependencies
+      working-directory: ./frontend  # Set to frontend folder
+      run: |
+        npm install
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: |
+        npm run build
+
+    - name: Deploy Frontend to Render
+      env:
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      run: |
+        render-cli deploy service ssrv-crre0l1u0jms73bk77h0 --branch main  # Use your actual frontend service ID
